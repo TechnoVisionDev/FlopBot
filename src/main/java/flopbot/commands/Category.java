@@ -8,8 +8,11 @@ package flopbot.commands;
  */
 public enum Category {
     FAUCET(":ocean: ", "Faucet"),
+    UTILITY(":tools: ", "Utility"),
     FUN(":smile:", "Fun"),
-    CASINO(":game_die:", "Casino");
+    CASINO(":game_die:", "Casino"),
+    WALLET(":moneybag:", "Wallet"),
+    LINKS(":globe_with_meridians:", "Links");
 
     public final String emoji;
     public final String name;

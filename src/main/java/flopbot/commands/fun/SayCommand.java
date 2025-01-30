@@ -16,12 +16,12 @@ public class SayCommand extends Command {
         this.name = "say";
         this.description = "Makes the bot say what you tell it to.";
         this.category = Category.FUN;
-        this.args.add(new OptionData(STRING, "content", "What the bot should say", true));
+        this.args.add(new OptionData(STRING, "message", "What the bot should say", true));
     }
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        String content = event.getOption("content", OptionMapping::getAsString);
+        String content = event.getOption("message", OptionMapping::getAsString);
         assert content != null;
         event.reply(content).queue();
     }
