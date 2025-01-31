@@ -3,6 +3,7 @@ package flopbot.commands;
 import flopbot.FlopBot;
 import flopbot.commands.fun.SayCommand;
 import flopbot.commands.utility.HelpCommand;
+import flopbot.commands.wallet.BalanceCommand;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -29,6 +30,8 @@ public class CommandRegistry extends ListenerAdapter {
     public CommandRegistry(FlopBot bot) {
         // Create and map commands
         mapCommand(
+                //Category: WALLET
+                new BalanceCommand(bot),
                 //Category: FUN
                 new SayCommand(bot),
                 //Category: UTILITY
