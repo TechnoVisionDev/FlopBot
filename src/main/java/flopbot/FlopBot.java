@@ -2,16 +2,17 @@ package flopbot;
 
 import com.google.gson.Gson;
 import flopbot.commands.CommandRegistry;
+import flopbot.handlers.StatsHandler;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import okhttp3.OkHttpClient;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.EnumSet;
+import java.util.*;
 
 /**
  * Main class for FlopBot Discord Bot.
@@ -41,7 +42,10 @@ public class FlopBot {
                 .setActivity(Activity.customStatus("/help | flopcoin.net"))
                 .build();
 
-        jda.addEventListener(new CommandRegistry(this));
+        jda.addEventListener(
+                new CommandRegistry(this),
+                new StatsHandler(config)
+        );
     }
 
     public static void main(String[] args) {
