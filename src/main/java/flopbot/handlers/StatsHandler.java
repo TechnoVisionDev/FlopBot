@@ -1,5 +1,6 @@
 package flopbot.handlers;
 
+import flopbot.FlopBot;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.github.redouane59.twitter.TwitterClient;
 import io.github.redouane59.twitter.dto.user.UserV2;
@@ -45,7 +46,6 @@ public class StatsHandler extends ListenerAdapter {
 
     // API Keys and configuration
     public final @NotNull String GUILD_ID;
-    public final @NotNull String LIVECOINWATCH_API_KEY;
     public final @NotNull String X_API_KEY;
     public final @NotNull String X_API_SECRET;
     public final @NotNull String X_ACCESS_TOKEN;
@@ -54,7 +54,6 @@ public class StatsHandler extends ListenerAdapter {
 
     public StatsHandler(Dotenv config) {
         GUILD_ID = config.get("GUILD_ID", System.getenv("GUILD_ID"));
-        LIVECOINWATCH_API_KEY = config.get("LIVECOINWATCH_API_KEY", System.getenv("LIVECOINWATCH_API_KEY"));
         X_API_KEY = config.get("X_API_KEY", System.getenv("X_API_KEY"));
         X_API_SECRET = config.get("X_API_SECRET", System.getenv("X_API_SECRET"));
         X_ACCESS_TOKEN = config.get("X_ACCESS_TOKEN", System.getenv("X_ACCESS_TOKEN"));
@@ -198,7 +197,7 @@ public class StatsHandler extends ListenerAdapter {
             RequestBody body = RequestBody.create(payload.toString(), MediaType.parse("application/json"));
             Request request = new Request.Builder()
                     .url(url)
-                    .addHeader("x-api-key", statsHandler.LIVECOINWATCH_API_KEY)
+                    .addHeader("x-api-key", FlopBot.LIVECOINWATCH_API_KEY)
                     .post(body)
                     .build();
 
