@@ -8,17 +8,19 @@ import flopbot.data.cache.Wallet;
 import flopbot.data.json.RpcResponse;
 import okhttp3.*;
 import org.bson.conversions.Bson;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
+import java.math.BigDecimal;
 
 import static flopbot.FlopBot.*;
 import static flopbot.handlers.StatsHandler.COIN_SYMBOL;
 
 public class WalletHandler {
 
-    public static final DecimalFormat FORMATTER = new DecimalFormat("#,###");
+    // MediaType for JSON requests
+    private static final MediaType JSON_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
 
     private final OkHttpClient client;
     private final Gson gson;
@@ -99,6 +101,47 @@ public class WalletHandler {
                 return 0;
             }
             return Double.parseDouble(responseBody);
+        }
+    }
+
+    /**
+     * Sends coins from the full node to the specified address.
+     *
+     * @param userID the ID of the user who will be sent coins.
+     * @param amount  The amount of coins to send.
+     * @return A JSONObject representing the node’s response.
+     * @throws IOException If there is a network or processing error.
+     */
+    public JSONObject sendCoins(long userID, BigDecimal amount) throws IOException {
+        // Construct the JSON-RPC payload.
+        JSONObject payload = new JSONObject();
+        payload.put("jsonrpc", "1.0");
+        payload.put("id", "sendcoins"); // an arbitrary id for this request
+        payload.put("method", "sendtoaddress");
+
+        // Create the parameters array: first the address, then the amount.
+        JSONArray params = new JSONArray();
+        params.put(getAddress(userID));
+        params.put(amount);
+        payload.put("params", params);
+
+        // Build the request body.
+        RequestBody body = RequestBody.create(payload.toString(), JSON_MEDIA_TYPE);
+
+        // Build the HTTP request with basic authentication.
+        Request request = new Request.Builder()
+                .url(RPC_URL)
+                .post(body)
+                .header("Authorization", Credentials.basic(RPC_USER, RPC_PASSWORD))
+                .build();
+
+        // Execute the request and process the response.
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected response code " + response.code() + ": " + response.body().string());
+            }
+            // Parse and return the JSON response.
+            return new JSONObject(response.body().string());
         }
     }
 
