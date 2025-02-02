@@ -18,6 +18,12 @@ public class WalletHandler {
     private final Gson gson;
     private final FlopBot bot;
 
+    // Caching fields for coin rate
+    private double cachedRate = 0.0;
+    private long lastRateUpdate = 0;
+    // 10 minutes in milliseconds
+    private static final long RATE_UPDATE_INTERVAL = 10 * 60 * 1000;
+
     public WalletHandler(FlopBot bot) {
         this.bot = bot;
         this.client = new OkHttpClient();
@@ -58,7 +64,29 @@ public class WalletHandler {
         );
     }
 
+    /**
+     * Returns the wallet balance in dollars.
+     * Updates the coin rate from the API if more than 10 minutes have passed since the last update.
+     *
+     * @param balance the wallet balance (in FLOP)
+     * @return the dollar value of the balance
+     * @throws IOException if the API call fails
+     */
     public double getValueInDollars(double balance) throws IOException {
+        long now = System.currentTimeMillis();
+        if (cachedRate == 0.0 || (now - lastRateUpdate) >= RATE_UPDATE_INTERVAL) {
+            updateCoinRate();
+            lastRateUpdate = now;
+        }
+        return cachedRate * balance;
+    }
+
+    /**
+     * Fetches the current coin rate from the API and updates the cachedRate field.
+     *
+     * @throws IOException if there is an error during the API call.
+     */
+    private void updateCoinRate() throws IOException {
         String url = "https://api.livecoinwatch.com/coins/single";
         JSONObject payload = new JSONObject()
                 .put("currency", "USD")
@@ -76,7 +104,8 @@ public class WalletHandler {
             if (!response.isSuccessful()) {
                 throw new IOException("Error while trying to fetch coin price");
             }
-            return new JSONObject(response.body().string()).optDouble("rate", 0.0) * balance;
+            JSONObject json = new JSONObject(response.body().string());
+            cachedRate = json.optDouble("rate", 0.0);
         }
     }
 }

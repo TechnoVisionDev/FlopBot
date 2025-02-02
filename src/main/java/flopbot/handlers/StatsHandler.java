@@ -156,7 +156,8 @@ public class StatsHandler extends ListenerAdapter {
             String url = "https://www.reddit.com/r/" + REDDIT_SUB + "/about.json";
             Request request = new Request.Builder()
                     .url(url)
-                    .header("User-Agent", "Mozilla")
+                    .header("User-Agent", "FlopBot/1.0 (by u/TechnoVisions)")
+                    .header("Connection", "close")
                     .build();
 
             try (Response response = httpClient.newCall(request).execute()) {

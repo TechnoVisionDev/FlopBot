@@ -36,7 +36,7 @@ public class BalanceCommand extends Command {
             User user = event.getUser();
             String name = user.getEffectiveName();
 
-            // Get wallet data from database and API
+            // Get wallet data from database and API (price is cached inside the wallet handler)
             double balance = bot.walletHandler.getBalance(user.getIdLong());
             String valueInDollars = DECIMAL_FORMAT.format(bot.walletHandler.getValueInDollars(balance));
             String formattedBalance = FlopBot.fLogoEmoji + " **" + formatDouble(balance) + " FLOP** (≈ $" + valueInDollars + ")";
@@ -48,13 +48,6 @@ public class BalanceCommand extends Command {
                     .setThumbnail(user.getEffectiveAvatarUrl())
                     .setColor(EmbedColor.DEFAULT.color)
                     .build();
-            /**
-            MessageEmbed embed = new EmbedBuilder()
-                    .setAuthor(name + "'s Wallet", null, user.getEffectiveAvatarUrl())
-                    .addField("Balance:", formattedBalance, false)
-                    .setColor(EmbedColor.DEFAULT.color)
-                    .build();
-             */
             event.getHook().editOriginalEmbeds(embed).queue();
 
         } catch (IOException e) {
@@ -62,19 +55,10 @@ public class BalanceCommand extends Command {
         }
     }
 
-    /**
-     * Formats a double with comma grouping. If the number is an integer,
-     * it will have no decimals; otherwise, it will have two decimals.
-     *
-     * @param value the number to format.
-     * @return the formatted string.
-     */
     public static String formatDouble(double value) {
-        // Check if the value is an integer (no fractional part)
         if (value == 0) {
             return "0.00";
-        }
-        else if (value == Math.floor(value)) {
+        } else if (value == Math.floor(value)) {
             DecimalFormat intFormat = new DecimalFormat("#,##0");
             return intFormat.format(value);
         } else {
@@ -83,3 +67,4 @@ public class BalanceCommand extends Command {
         }
     }
 }
+
