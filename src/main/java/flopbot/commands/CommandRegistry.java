@@ -5,6 +5,7 @@ import flopbot.commands.faucet.MineCommand;
 import flopbot.commands.fun.SayCommand;
 import flopbot.commands.utility.HelpCommand;
 import flopbot.commands.wallet.BalanceCommand;
+import flopbot.commands.wallet.WithdrawCommand;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -33,6 +34,7 @@ public class CommandRegistry extends ListenerAdapter {
         mapCommand(
                 //Category: WALLET
                 new BalanceCommand(bot),
+                new WithdrawCommand(bot),
                 //Category: FAUCET
                 new MineCommand(bot),
                 //Category: FUN

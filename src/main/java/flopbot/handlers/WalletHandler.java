@@ -50,6 +50,14 @@ public class WalletHandler {
         );
     }
 
+    public void setBalance(long userID, long newBalance) {
+        getWallet(userID);
+        bot.database.wallets.updateOne(
+                Filters.eq("user", userID),
+                Updates.set("balance", newBalance)
+        );
+    }
+
     public double getValueInDollars(double balance) throws IOException {
         String url = "https://api.livecoinwatch.com/coins/single";
         JSONObject payload = new JSONObject()
