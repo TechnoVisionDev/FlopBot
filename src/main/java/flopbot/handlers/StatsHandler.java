@@ -126,11 +126,13 @@ public class StatsHandler extends ListenerAdapter {
             } else if (volume >= 1_000_000) {
                 return String.format("%.1fM", volume / 1_000_000);
             } else if (volume >= 1_000) {
-                return String.format("%.0fk", volume / 1_000);
+                // Display three decimals for thousands (e.g., 7.312K)
+                return String.format("%.3fk", volume / 1_000);
             } else {
                 return String.valueOf((int) volume);
             }
         }
+
 
         /**
          * Finds an existing voice channel with the given prefix and updates its name,
