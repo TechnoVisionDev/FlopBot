@@ -6,9 +6,11 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Indexes;
 import flopbot.data.cache.Wallet;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
 
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
@@ -43,5 +45,8 @@ public class Database {
 
         // Initialize collections if they don't exist.
         wallets = database.getCollection("wallets", Wallet.class);
+
+        Bson userIndex = Indexes.descending("user");
+        wallets.createIndex(userIndex);
     }
 }
