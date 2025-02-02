@@ -28,7 +28,7 @@ public class EmbedUtils {
     public static @NotNull MessageEmbed createError(String errorMessage) {
         return new EmbedBuilder()
                 .setColor(EmbedColor.ERROR.color)
-                .setDescription(RED_X + " " + errorMessage)
+                .setDescription(":x: " + errorMessage)
                 .build();
     }
 

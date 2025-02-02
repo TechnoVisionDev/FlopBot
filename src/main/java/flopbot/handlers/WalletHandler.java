@@ -1,26 +1,18 @@
 package flopbot.handlers;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import flopbot.FlopBot;
 import flopbot.data.cache.Wallet;
-import flopbot.data.json.RpcResponse;
 import okhttp3.*;
-import org.bson.conversions.Bson;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
-import static flopbot.FlopBot.*;
 import static flopbot.handlers.StatsHandler.COIN_SYMBOL;
 
 public class WalletHandler {
-
-    // MediaType for JSON requests
-    private static final MediaType JSON_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
 
     private final OkHttpClient client;
     private final Gson gson;
@@ -32,117 +24,30 @@ public class WalletHandler {
         this.gson = new Gson();
     }
 
-    public String getAddress(long userID) throws IOException {
-        Bson filter = Filters.eq("user", userID);
-        Wallet wallet = bot.database.wallets.find(filter).first();
+    private Wallet getWallet(long userID) {
+        Wallet wallet = bot.database.wallets.find(Filters.eq("user", userID)).first();
         if (wallet == null) {
-            return createAddress(userID);
+            return createWallet(userID);
         }
-        return wallet.getAddress();
+        return wallet;
     }
 
-    public String createAddress(long userID) throws IOException {
-        MediaType JSON_MEDIA = MediaType.parse("application/json; charset=utf-8");
-        // Build the JSON payload for the "getnewaddress" RPC call.
-        String jsonPayload = "{\"jsonrpc\": \"1.0\", \"id\": \"java-newaddress\", \"method\": \"getnewaddress\", \"params\": []}";
-        RequestBody body = RequestBody.create(jsonPayload, JSON_MEDIA);
-
-        // Build the HTTP request with Basic Auth using your RPC credentials.
-        Request request = new Request.Builder()
-                .url(RPC_URL)
-                .post(body)
-                .header("Authorization", Credentials.basic(RPC_USER, RPC_PASSWORD))
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected HTTP code " + response);
-            }
-            String responseBody = response.body().string();
-
-            // Deserialize the JSON response. We expect the "result" to be a String.
-            RpcResponse<String> rpcResponse = gson.fromJson(
-                    responseBody,
-                    new TypeToken<RpcResponse<String>>() {
-                    }.getType()
-            );
-
-            if (rpcResponse.error != null) {
-                throw new IOException("RPC Error: " + rpcResponse.error.message);
-            }
-
-            // Add to database
-            Wallet wallet = new Wallet(userID, rpcResponse.result);
-            bot.database.wallets.insertOne(wallet);
-
-            return rpcResponse.result;
-        }
+    private Wallet createWallet(long userID) {
+        Wallet wallet = new Wallet(userID);
+        bot.database.wallets.insertOne(wallet);
+        return wallet;
     }
 
-    /**
-     * Retrieves the balance of the given address from the explorer API.
-     *
-     * @param address the wallet address to query.
-     * @return the balance as a double.
-     * @throws IOException if an I/O error occurs or the response is not successful.
-     */
-    public double getBalance(String address) throws IOException {
-        // Build the API URL
-        String url = "https://explorer.flopcoin.net/ext/getbalance/" + address;
-        Request request = new Request.Builder().url(url).build();
-
-        // Execute the request
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response code: " + response.code());
-            }
-            String responseBody = response.body().string().trim();
-            if (responseBody.startsWith("{") || responseBody.startsWith("[")) {
-                return 0;
-            }
-            return Double.parseDouble(responseBody);
-        }
+    public long getBalance(long userID) {
+        return getWallet(userID).getBalance();
     }
 
-    /**
-     * Sends coins from the full node to the specified address.
-     *
-     * @param userID the ID of the user who will be sent coins.
-     * @param amount  The amount of coins to send.
-     * @return A JSONObject representing the node’s response.
-     * @throws IOException If there is a network or processing error.
-     */
-    public JSONObject sendCoins(long userID, BigDecimal amount) throws IOException {
-        // Construct the JSON-RPC payload.
-        JSONObject payload = new JSONObject();
-        payload.put("jsonrpc", "1.0");
-        payload.put("id", "sendcoins"); // an arbitrary id for this request
-        payload.put("method", "sendtoaddress");
-
-        // Create the parameters array: first the address, then the amount.
-        JSONArray params = new JSONArray();
-        params.put(getAddress(userID));
-        params.put(amount);
-        payload.put("params", params);
-
-        // Build the request body.
-        RequestBody body = RequestBody.create(payload.toString(), JSON_MEDIA_TYPE);
-
-        // Build the HTTP request with basic authentication.
-        Request request = new Request.Builder()
-                .url(RPC_URL)
-                .post(body)
-                .header("Authorization", Credentials.basic(RPC_USER, RPC_PASSWORD))
-                .build();
-
-        // Execute the request and process the response.
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response code " + response.code() + ": " + response.body().string());
-            }
-            // Parse and return the JSON response.
-            return new JSONObject(response.body().string());
-        }
+    public void sendCoins(long userID, long amount) {
+        getWallet(userID);
+        bot.database.wallets.updateOne(
+                Filters.eq("user", userID),
+                Updates.inc("balance", amount)
+        );
     }
 
     public double getValueInDollars(double balance) throws IOException {

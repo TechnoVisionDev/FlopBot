@@ -37,19 +37,24 @@ public class BalanceCommand extends Command {
             String name = user.getEffectiveName();
 
             // Get wallet data from database and API
-            String address = bot.walletHandler.getAddress(user.getIdLong());
-            double num = bot.walletHandler.getBalance(address);
-            String valueInDollars = DECIMAL_FORMAT.format(bot.walletHandler.getValueInDollars(num));
-            String balance = FlopBot.fLogoEmoji + " **" + formatDouble(num) + " FLOP** (≈ $" + valueInDollars + ")";
+            double balance = bot.walletHandler.getBalance(user.getIdLong());
+            String valueInDollars = DECIMAL_FORMAT.format(bot.walletHandler.getValueInDollars(balance));
+            String formattedBalance = FlopBot.fLogoEmoji + " **" + formatDouble(balance) + " FLOP** (≈ $" + valueInDollars + ")";
 
             // Create embed with wallet info
             MessageEmbed embed = new EmbedBuilder()
                     .setTitle(name + "'s Wallet")
-                    .addField("Balance:", balance, false)
-                    .addField("Wallet Address:", "`" + address + "`", false)
-                    .setThumbnail(user.getAvatarUrl())
+                    .addField("Balance", formattedBalance, true)
+                    .setThumbnail(user.getEffectiveAvatarUrl())
                     .setColor(EmbedColor.DEFAULT.color)
                     .build();
+            /**
+            MessageEmbed embed = new EmbedBuilder()
+                    .setAuthor(name + "'s Wallet", null, user.getEffectiveAvatarUrl())
+                    .addField("Balance:", formattedBalance, false)
+                    .setColor(EmbedColor.DEFAULT.color)
+                    .build();
+             */
             event.getHook().editOriginalEmbeds(embed).queue();
 
         } catch (IOException e) {
@@ -60,14 +65,6 @@ public class BalanceCommand extends Command {
     /**
      * Formats a double with comma grouping. If the number is an integer,
      * it will have no decimals; otherwise, it will have two decimals.
-     *
-     * Examples:
-     *   1          -> "1"
-     *   10         -> "10"
-     *   100        -> "100"
-     *   1000       -> "1,000"
-     *   1000.5     -> "1,000.50"
-     *   1000000    -> "1,000,000"
      *
      * @param value the number to format.
      * @return the formatted string.

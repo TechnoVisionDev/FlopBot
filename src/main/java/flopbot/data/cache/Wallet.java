@@ -8,13 +8,18 @@ package flopbot.data.cache;
 public class Wallet {
 
     private Long user;
-    private String address;
+    private Long balance;
 
     public Wallet() { }
 
-    public Wallet(Long user, String address) {
+    public Wallet(Long user) {
         this.user = user;
-        this.address = address;
+        this.balance = 0L;
+    }
+
+    public Wallet(Long user, Long balance) {
+        this.user = user;
+        this.balance = balance;
     }
 
     public Long getUser() {
@@ -25,11 +30,11 @@ public class Wallet {
         this.user = user;
     }
 
-    public String getAddress() {
-        return address;
+    public Long getBalance() {
+        return balance;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setBalance(Long balance) {
+        this.balance = balance;
     }
 }
