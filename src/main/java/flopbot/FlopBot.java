@@ -22,8 +22,8 @@ import java.util.*;
  */
 public class FlopBot {
 
-    public static final String flopcoinEmoji = "<:flopcoin:1335028565128777759>";
-    public static final String fLogoEmoji = "<:f_logo:1335028928879919116>";
+    public static final String flopcoinEmoji = "<:flopcoin:1334199635756974293>";
+    public static final String fLogoEmoji = "<:flopcoinf:1334198965888876624>";
 
     public Gson gson;
     public OkHttpClient httpClient;

@@ -101,13 +101,15 @@ public class StatsHandler extends ListenerAdapter {
                 String price = "$" + DECIMAL_FORMAT.format(rate);
                 String volume = formatVolume(volumeValue);
 
+                // TODO: Fix Reddit Updating
+
                 int discordMemberCount = guild.getMemberCount();
-                int redditSubscribers = fetchRedditSubscribers();
+                //int redditSubscribers = fetchRedditSubscribers();
                 int twitterFollowers = fetchTwitterFollowers();
 
                 // Update channels with the latest stats
                 updateChannel(guild, DISCORD_CHANNEL_PREFIX, DISCORD_CHANNEL_PREFIX + discordMemberCount);
-                updateChannel(guild, REDDIT_CHANNEL_PREFIX, REDDIT_CHANNEL_PREFIX + redditSubscribers);
+                //updateChannel(guild, REDDIT_CHANNEL_PREFIX, REDDIT_CHANNEL_PREFIX + redditSubscribers);
                 updateChannel(guild, FLOP_PRICE_CHANNEL_PREFIX, FLOP_PRICE_CHANNEL_PREFIX + price);
                 updateChannel(guild, FLOP_VOLUME_CHANNEL_PREFIX, FLOP_VOLUME_CHANNEL_PREFIX + volume);
                 updateChannel(guild, TWITTER_CHANNEL_PREFIX, TWITTER_CHANNEL_PREFIX + twitterFollowers);
@@ -133,7 +135,6 @@ public class StatsHandler extends ListenerAdapter {
             }
         }
 
-
         /**
          * Finds an existing voice channel with the given prefix and updates its name,
          * or creates one if it doesn't exist.
@@ -155,7 +156,7 @@ public class StatsHandler extends ListenerAdapter {
          * Fetches the number of subscribers from the specified Reddit subreddit.
          */
         private int fetchRedditSubscribers() throws IOException {
-            String url = "https://www.reddit.com/r/" + REDDIT_SUB + "/about.json";
+            String url = "https://oauth.reddit.com/r/" + REDDIT_SUB + "/about.json";
             Request request = new Request.Builder()
                     .url(url)
                     .header("User-Agent", "FlopBot/1.0 (by u/TechnoVisions)")
