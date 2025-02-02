@@ -24,14 +24,14 @@ public class MineCommand extends Command {
     private static final long FAUCET_TIMEOUT = 3600000;
     private static final DecimalFormat FORMATTER = new DecimalFormat("#,###");
 
-    private Map<Long, Long> timeouts;
-    private int minReward;
-    private int maxReward;
+    private final Map<Long, Long> timeouts;
+    private final int minReward;
+    private final int maxReward;
 
     public MineCommand(FlopBot bot) {
         super(bot);
         this.name = "mine";
-        this.description = "Earn free coins from the faucet.";
+        this.description = "Earn free coins from the faucet every hour.";
         this.category = Category.FAUCET;
         this.timeouts = new HashMap<>();
         this.minReward = Integer.parseInt(bot.config.get("FAUCET_MIN_REWARD", System.getenv("FAUCET_MIN_REWARD")));
