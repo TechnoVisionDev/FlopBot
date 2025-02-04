@@ -1,7 +1,7 @@
 package flopbot.commands;
 
 import flopbot.FlopBot;
-import flopbot.commands.faucet.MineCommand;
+import flopbot.commands.faucet.FaucetCommand;
 import flopbot.commands.fun.SayCommand;
 import flopbot.commands.utility.HelpCommand;
 import flopbot.commands.wallet.BalanceCommand;
@@ -36,7 +36,7 @@ public class CommandRegistry extends ListenerAdapter {
                 new BalanceCommand(bot),
                 new WithdrawCommand(bot),
                 //Category: FAUCET
-                new MineCommand(bot),
+                new FaucetCommand(bot),
                 //Category: FUN
                 new SayCommand(bot),
                 //Category: UTILITY

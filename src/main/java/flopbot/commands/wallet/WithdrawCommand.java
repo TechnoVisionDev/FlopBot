@@ -94,7 +94,7 @@ public class WithdrawCommand extends Command {
             MessageEmbed embed = new EmbedBuilder()
                     .setAuthor(event.getUser().getEffectiveName(), null, event.getUser().getEffectiveAvatarUrl())
                     .setThumbnail("https://cdn-icons-png.flaticon.com/512/8815/8815105.png")
-                    .setDescription("You successfully withdrew " + FlopBot.fLogoEmoji + " **" + FORMATTER.format(amount) + " FLOP**")
+                    .setDescription("You successfully withdrew " + FlopBot.flopcoinEmoji + " **" + FORMATTER.format(amount) + " FLOP**")
                     .addField("Transaction ID", "[Click to View Transaction](https://explorer.flopcoin.net/ext/gettx/" + txid + ")", false)
                     .addField("Destination Address", "`" + address + "`", false)
                     .setColor(EmbedColor.DEFAULT.color)

@@ -39,12 +39,12 @@ public class BalanceCommand extends Command {
             // Get wallet data from database and API (price is cached inside the wallet handler)
             double balance = bot.walletHandler.getBalance(user.getIdLong());
             String valueInDollars = DECIMAL_FORMAT.format(bot.walletHandler.getValueInDollars(balance));
-            String formattedBalance = FlopBot.fLogoEmoji + " **" + formatDouble(balance) + " FLOP** (≈ $" + valueInDollars + ")";
+            String formattedBalance = FlopBot.flopcoinEmoji + " **" + formatDouble(balance) + " FLOP** (≈ $" + valueInDollars + ")";
 
             // Create embed with wallet info
             MessageEmbed embed = new EmbedBuilder()
                     .setTitle(name + "'s Wallet")
-                    .addField("Balance", formattedBalance, true)
+                    .addField("Balance:", formattedBalance, true)
                     .setThumbnail(user.getEffectiveAvatarUrl())
                     .setColor(EmbedColor.DEFAULT.color)
                     .build();

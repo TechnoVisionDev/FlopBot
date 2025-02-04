@@ -3,7 +3,6 @@ package flopbot;
 import com.google.gson.Gson;
 import flopbot.commands.CommandRegistry;
 import flopbot.data.Database;
-import flopbot.handlers.StatsHandler;
 import flopbot.handlers.WalletHandler;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
@@ -22,8 +21,8 @@ import java.util.*;
  */
 public class FlopBot {
 
-    public static final String flopcoinEmoji = "<:flopcoin:1334199635756974293>";
-    public static final String fLogoEmoji = "<:flopcoinf:1334198965888876624>";
+    //public static final String flopcoinEmoji = "<:flopcoin:1334199635756974293>";
+    public static final String flopcoinEmoji = "<:flopcoin:1335028565128777759>";
 
     public Gson gson;
     public OkHttpClient httpClient;
@@ -71,8 +70,7 @@ public class FlopBot {
 
         // Add Commands and Listeners
         jda.addEventListener(
-                new CommandRegistry(this),
-                new StatsHandler(config)
+                new CommandRegistry(this)
         );
     }
 

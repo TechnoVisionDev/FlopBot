@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author TechnoVision
  */
-public class MineCommand extends Command {
+public class FaucetCommand extends Command {
 
     private static final long FAUCET_TIMEOUT = 3600000;
     private static final DecimalFormat FORMATTER = new DecimalFormat("#,###");
@@ -28,9 +28,9 @@ public class MineCommand extends Command {
     private final int minReward;
     private final int maxReward;
 
-    public MineCommand(FlopBot bot) {
+    public FaucetCommand(FlopBot bot) {
         super(bot);
-        this.name = "mine";
+        this.name = "faucet";
         this.description = "Earn free coins from the faucet every hour.";
         this.category = Category.FAUCET;
         this.timeouts = new HashMap<>();
@@ -48,7 +48,7 @@ public class MineCommand extends Command {
 
         if (timeout != null && System.currentTimeMillis() < timeout) {
             // On timeout
-            embed.setDescription(":stopwatch: You can next mine " + formatTimeout(timeout) + ".");
+            embed.setDescription(":stopwatch: You can next use the faucet " + formatTimeout(timeout) + ".");
             embed.setColor(EmbedColor.ERROR.color);
             event.replyEmbeds(embed.build()).setEphemeral(true).queue();
         } else {
@@ -58,8 +58,8 @@ public class MineCommand extends Command {
             timeouts.put(userID, System.currentTimeMillis() + FAUCET_TIMEOUT);
 
             // Send embed reply
-            embed.setDescription("You successfully mined " + FlopBot.fLogoEmoji + " **" + FORMATTER.format(randomNumber) + " FLOP**!\nView your balance using the `/balance` command.");
-            embed.setThumbnail("https://cdn-icons-png.flaticon.com/512/9109/9109910.png");
+            embed.setDescription("You just earned " + FlopBot.flopcoinEmoji + " **" + FORMATTER.format(randomNumber) + " FLOP**\nView your wallet using `/balance`");
+            embed.setThumbnail("https://i.imgur.com/8gLVMdk.png");
             event.replyEmbeds(embed.build()).queue();
         }
     }

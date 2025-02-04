@@ -1,6 +1,5 @@
 package flopbot.handlers;
 
-import com.google.gson.Gson;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import flopbot.FlopBot;
@@ -10,12 +9,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import static flopbot.handlers.StatsHandler.COIN_SYMBOL;
-
 public class WalletHandler {
 
     private final OkHttpClient client;
-    private final Gson gson;
     private final FlopBot bot;
 
     // Caching fields for coin rate
@@ -27,7 +23,6 @@ public class WalletHandler {
     public WalletHandler(FlopBot bot) {
         this.bot = bot;
         this.client = new OkHttpClient();
-        this.gson = new Gson();
     }
 
     private Wallet getWallet(long userID) {
@@ -90,7 +85,7 @@ public class WalletHandler {
         String url = "https://api.livecoinwatch.com/coins/single";
         JSONObject payload = new JSONObject()
                 .put("currency", "USD")
-                .put("code", COIN_SYMBOL)
+                .put("code", "FLOP")
                 .put("meta", true);
 
         RequestBody body = RequestBody.create(payload.toString(), MediaType.parse("application/json"));
