@@ -1,4 +1,4 @@
-package flopbot.util.embed;
+package flopbot.util.embeds;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;

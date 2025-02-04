@@ -3,7 +3,7 @@ package flopbot.commands.links;
 import flopbot.FlopBot;
 import flopbot.commands.Category;
 import flopbot.commands.Command;
-import flopbot.util.embed.EmbedColor;
+import flopbot.util.embeds.EmbedColor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;

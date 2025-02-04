@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 
 public class NumberFormat {
 
+    public static final DecimalFormat FORMATTER = new DecimalFormat("#,###");
+
     public static String formatDouble(double value) {
         if (value == 0) {
             return "0.00";

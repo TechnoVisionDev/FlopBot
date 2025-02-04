@@ -1,4 +1,4 @@
-package flopbot.util.embed;
+package flopbot.util.embeds;
 
 /**
  * Utility enum storing color codes and helpful methods.

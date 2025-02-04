@@ -3,13 +3,14 @@ package flopbot.commands.wallet;
 import flopbot.FlopBot;
 import flopbot.commands.Category;
 import flopbot.commands.Command;
-import flopbot.util.embed.EmbedColor;
-import flopbot.util.embed.EmbedUtils;
+import flopbot.util.embeds.EmbedColor;
+import flopbot.util.embeds.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
+import static flopbot.util.NumberFormat.FORMATTER;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.STRING;
 
@@ -24,8 +25,6 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 
 public class WithdrawCommand extends Command {
-
-    private static final DecimalFormat FORMATTER = new DecimalFormat("#,###");
 
     public WithdrawCommand(FlopBot bot) {
         super(bot);
