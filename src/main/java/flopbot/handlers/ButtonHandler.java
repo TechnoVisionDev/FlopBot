@@ -2,6 +2,7 @@ package flopbot.handlers;
 
 import flopbot.FlopBot;
 import flopbot.commands.casino.BlackjackCommand;
+import flopbot.commands.casino.CrashCommand;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
@@ -142,6 +143,11 @@ public class ButtonHandler extends ListenerAdapter {
                 embed = BlackjackCommand.stand(bot.walletHandler, event.getUser(), bet, uuid);
             }
             event.editComponents(ActionRow.of(buttons.get(uuid))).setEmbeds(embed).queue();
+        }
+        else if (pressedArgs[0].equals("crash") && storedArgs[0].equals("crash")) {
+            MessageEmbed embed = CrashCommand.cashout(bot.walletHandler, event.getUser());
+            Button disabledButton = buttons.remove(uuid).getFirst().asDisabled();
+            event.editComponents(ActionRow.of(disabledButton)).setEmbeds(embed).queue();
         }
     }
 }
