@@ -11,7 +11,8 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
+
+import static flopbot.util.NumberFormat.formatDouble;
 
 /**
  * Command to check wallet balance.
@@ -19,8 +20,6 @@ import java.text.DecimalFormat;
  * @author TechnoVision
  */
 public class BalanceCommand extends Command {
-
-    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
 
     public BalanceCommand(FlopBot bot) {
         super(bot);
@@ -38,8 +37,8 @@ public class BalanceCommand extends Command {
 
             // Get wallet data from database and API (price is cached inside the wallet handler)
             double balance = bot.walletHandler.getBalance(user.getIdLong());
-            String valueInDollars = DECIMAL_FORMAT.format(bot.walletHandler.getValueInDollars(balance));
-            String formattedBalance = FlopBot.flopcoinEmoji + " **" + formatDouble(balance) + " FLOP** (≈ $" + valueInDollars + ")";
+            String valueInDollars = formatDouble(bot.walletHandler.getValueInDollars(balance));
+            String formattedBalance = FlopBot.COIN_EMOJI + " **" + formatDouble(balance) + " FLOP** (≈ $" + valueInDollars + ")";
 
             // Create embed with wallet info
             MessageEmbed embed = new EmbedBuilder()
@@ -52,18 +51,6 @@ public class BalanceCommand extends Command {
 
         } catch (IOException e) {
             event.getHook().editOriginalEmbeds(EmbedUtils.createError("An error occurred. Please try again!")).queue();
-        }
-    }
-
-    public static String formatDouble(double value) {
-        if (value == 0) {
-            return "0.00";
-        } else if (value == Math.floor(value)) {
-            DecimalFormat intFormat = new DecimalFormat("#,##0");
-            return intFormat.format(value);
-        } else {
-            DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
-            return decimalFormat.format(value);
         }
     }
 }

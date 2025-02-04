@@ -76,7 +76,7 @@ public class WithdrawCommand extends Command {
             }
 
             // Check the node's wallet balance using the getbalance RPC command.
-            double faucet = getFaucetBalance();
+            double faucet = bot.getFaucetBalance();
             if (amount > faucet) {
                 event.getHook()
                         .sendMessageEmbeds(EmbedUtils.createError("The bot has insufficient funds. Please contact an admin!"))
@@ -94,7 +94,7 @@ public class WithdrawCommand extends Command {
             MessageEmbed embed = new EmbedBuilder()
                     .setAuthor(event.getUser().getEffectiveName(), null, event.getUser().getEffectiveAvatarUrl())
                     .setThumbnail("https://cdn-icons-png.flaticon.com/512/8815/8815105.png")
-                    .setDescription("You successfully withdrew " + FlopBot.flopcoinEmoji + " **" + FORMATTER.format(amount) + " FLOP**")
+                    .setDescription("You successfully withdrew " + FlopBot.COIN_EMOJI + " **" + FORMATTER.format(amount) + " FLOP**")
                     .addField("Transaction ID", "[Click to View Transaction](https://explorer.flopcoin.net/ext/gettx/" + txid + ")", false)
                     .addField("Destination Address", "`" + address + "`", false)
                     .setColor(EmbedColor.DEFAULT.color)
@@ -144,43 +144,6 @@ public class WithdrawCommand extends Command {
 
         JSONObject result = jsonResponse.getJSONObject("result");
         return result.optBoolean("isvalid", false);
-    }
-
-    /**
-     * Retrieves the faucet's balance using the getbalance RPC command.
-     *
-     * @return The current wallet balance.
-     * @throws Exception if the RPC call fails.
-     */
-    private double getFaucetBalance() throws Exception {
-        JSONObject jsonRequest = new JSONObject();
-        jsonRequest.put("jsonrpc", "1.0");
-        jsonRequest.put("id", "getbalance");
-        jsonRequest.put("method", "getbalance");
-        // Some nodes require an empty array of parameters.
-        JSONArray params = new JSONArray();
-        jsonRequest.put("params", params);
-
-        String auth = FlopBot.RPC_USER + ":" + FlopBot.RPC_PASSWORD;
-        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(FlopBot.RPC_URL))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Basic " + encodedAuth)
-                .POST(HttpRequest.BodyPublishers.ofString(jsonRequest.toString()))
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        JSONObject jsonResponse = new JSONObject(response.body());
-
-        if (!jsonResponse.isNull("error") && !jsonResponse.get("error").toString().equals("null")) {
-            JSONObject errorObj = jsonResponse.getJSONObject("error");
-            throw new Exception("Failed to get balance: " + errorObj.optString("message", "Unknown RPC error"));
-        }
-
-        return jsonResponse.getDouble("result");
     }
 
     /**

@@ -58,7 +58,7 @@ public class FaucetCommand extends Command {
             timeouts.put(userID, System.currentTimeMillis() + FAUCET_TIMEOUT);
 
             // Send embed reply
-            embed.setDescription("You just earned " + FlopBot.flopcoinEmoji + " **" + FORMATTER.format(randomNumber) + " FLOP**\nView your wallet using `/balance`");
+            embed.setDescription("You just earned " + FlopBot.COIN_EMOJI + " **" + FORMATTER.format(randomNumber) + " FLOP**\nView your wallet using `/balance`");
             embed.setThumbnail("https://i.imgur.com/8gLVMdk.png");
             event.replyEmbeds(embed.build()).queue();
         }

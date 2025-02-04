@@ -17,8 +17,9 @@ public class WalletHandler {
     // Caching fields for coin rate
     private double cachedRate = 0.0;
     private long lastRateUpdate = 0;
-    // 10 minutes in milliseconds
-    private static final long RATE_UPDATE_INTERVAL = 10 * 60 * 1000;
+
+    // 1 hour in milliseconds
+    private static final long RATE_UPDATE_INTERVAL = 60 * 60 * 1000;
 
     public WalletHandler(FlopBot bot) {
         this.bot = bot;
