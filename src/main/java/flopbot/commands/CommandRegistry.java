@@ -11,7 +11,6 @@ import flopbot.commands.fun.SayCommand;
 import flopbot.commands.links.*;
 import flopbot.commands.utility.HelpCommand;
 import flopbot.commands.utility.RolesCommand;
-import flopbot.commands.utility.ServerCommand;
 import flopbot.commands.wallet.BalanceCommand;
 import flopbot.commands.wallet.WithdrawCommand;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
@@ -64,7 +63,6 @@ public class CommandRegistry extends ListenerAdapter {
                 new CrashCommand(bot),
                 //Category: UTILITY
                 new RolesCommand(bot),
-                new ServerCommand(bot),
                 new HelpCommand(bot) // MUST BE LAST COMMAND REGISTERED!
         );
     }
