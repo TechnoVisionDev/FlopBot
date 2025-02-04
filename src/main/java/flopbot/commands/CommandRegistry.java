@@ -4,6 +4,7 @@ import flopbot.FlopBot;
 import flopbot.commands.faucet.DonateCommand;
 import flopbot.commands.faucet.FaucetCommand;
 import flopbot.commands.fun.SayCommand;
+import flopbot.commands.links.*;
 import flopbot.commands.utility.HelpCommand;
 import flopbot.commands.wallet.BalanceCommand;
 import flopbot.commands.wallet.WithdrawCommand;
@@ -33,6 +34,15 @@ public class CommandRegistry extends ListenerAdapter {
     public CommandRegistry(FlopBot bot) {
         // Create and map commands
         mapCommand(
+                //Category: LINKS
+                new TwitterCommand(bot),
+                new RedditCommand(bot),
+                new WebsiteCommand(bot),
+                new ExplorerCommand(bot),
+                new PoolsCommand(bot),
+                new InscriptionsCommand(bot),
+                new GithubCommand(bot),
+                new WhitepaperCommand(bot),
                 //Category: WALLET
                 new BalanceCommand(bot),
                 new WithdrawCommand(bot),
