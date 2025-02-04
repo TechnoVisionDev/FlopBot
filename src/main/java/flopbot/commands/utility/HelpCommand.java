@@ -4,6 +4,7 @@ import flopbot.FlopBot;
 import flopbot.commands.Category;
 import flopbot.commands.Command;
 import flopbot.commands.CommandRegistry;
+import flopbot.handlers.ButtonHandler;
 import flopbot.util.embed.EmbedColor;
 import flopbot.util.embed.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -66,7 +67,7 @@ public class HelpCommand extends Command {
             // Send paginated help menu
             ReplyCallbackAction action = event.replyEmbeds(embeds.get(0));
             if (embeds.size() > 1) {
-                //TODO: ButtonListener.sendPaginatedMenu(event.getUser().getId(), action, embeds);
+                ButtonHandler.sendPaginatedMenu(event.getUser().getId(), action, embeds);
                 return;
             }
             action.queue();
