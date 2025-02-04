@@ -60,6 +60,10 @@ public class WalletHandler {
         );
     }
 
+    public void removeCoins(long userID, long amount) {
+        setBalance(userID, getWallet(userID).getBalance() - amount);
+    }
+
     /**
      * Returns the wallet balance in dollars.
      * Updates the coin rate from the API if more than 10 minutes have passed since the last update.

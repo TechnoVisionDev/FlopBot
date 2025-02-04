@@ -1,6 +1,7 @@
 package flopbot.commands;
 
 import flopbot.FlopBot;
+import flopbot.commands.casino.BlackjackCommand;
 import flopbot.commands.faucet.DonateCommand;
 import flopbot.commands.faucet.FaucetCommand;
 import flopbot.commands.fun.SayCommand;
@@ -51,6 +52,8 @@ public class CommandRegistry extends ListenerAdapter {
                 new DonateCommand(bot),
                 //Category: FUN
                 new SayCommand(bot),
+                //Category: CASINO
+                new BlackjackCommand(bot),
                 //Category: UTILITY
                 new HelpCommand(bot) // MUST BE LAST COMMAND REGISTERED!
         );

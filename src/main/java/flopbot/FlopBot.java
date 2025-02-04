@@ -81,7 +81,7 @@ public class FlopBot {
         // Add Commands and Listeners
         jda.addEventListener(
                 new CommandRegistry(this),
-                new ButtonHandler()
+                new ButtonHandler(this)
         );
     }
 
