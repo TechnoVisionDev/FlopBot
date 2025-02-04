@@ -130,7 +130,7 @@ public class BlackjackCommand extends Command {
         String userText = printCards(playerHand) + "\n\nValue: " + score;
         return new EmbedBuilder()
                 .setColor(EmbedColor.DEFAULT.color)
-                .setAuthor(user.getAsTag(), null, user.getEffectiveAvatarUrl())
+                .setAuthor(user.getEffectiveName(), null, user.getEffectiveAvatarUrl())
                 .addField("Your Hand", userText, true)
                 .addField("Dealer Hand", dealerText, true);
     }
@@ -152,7 +152,7 @@ public class BlackjackCommand extends Command {
         String dealerText = printCards(dealerHand) + "\n\nValue: " + dealerScore;
         return new EmbedBuilder()
                 .setColor(EmbedColor.DEFAULT.color)
-                .setAuthor(user.getAsTag(), null, user.getEffectiveAvatarUrl())
+                .setAuthor(user.getEffectiveName(), null, user.getEffectiveAvatarUrl())
                 .addField("Your Hand", userText, true)
                 .addField("Dealer Hand", dealerText, true);
     }

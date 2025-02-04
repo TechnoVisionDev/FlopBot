@@ -67,7 +67,7 @@ public class CrashCommand extends Command {
         // 3% chance of an instant crash.
         if (ThreadLocalRandom.current().nextDouble() <= 0.03) {
             EmbedBuilder embed = new EmbedBuilder()
-                    .setAuthor(user.getAsTag(), null, user.getEffectiveAvatarUrl())
+                    .setAuthor(user.getEffectiveName(), null, user.getEffectiveAvatarUrl())
                     .setColor(EmbedColor.ERROR.color)
                     .setDescription("Your bet: " + FlopBot.COIN_EMOJI + " " + NumberFormat.FORMATTER.format(bet))
                     .addField("Crashed At", "x1.00", true)
@@ -85,7 +85,7 @@ public class CrashCommand extends Command {
         // Build initial embed.
         EmbedBuilder embed = new EmbedBuilder()
                 .setColor(EmbedColor.DEFAULT.color)
-                .setAuthor(user.getAsTag(), null, user.getEffectiveAvatarUrl())
+                .setAuthor(user.getEffectiveName(), null, user.getEffectiveAvatarUrl())
                 .setDescription("Your Bet: " + FlopBot.COIN_EMOJI + " " + NumberFormat.FORMATTER.format(bet))
                 .addField("Multiplier", "x1.00", true)
                 .addField("Profit", FlopBot.COIN_EMOJI + " " + NumberFormat.FORMATTER.format(bet), true);
@@ -107,7 +107,7 @@ public class CrashCommand extends Command {
                 if (game.currMultiplier >= game.maxMultiplier) {
                     // Game crashes.
                     EmbedBuilder crashEmbed = new EmbedBuilder()
-                            .setAuthor(user.getAsTag(), null, user.getEffectiveAvatarUrl())
+                            .setAuthor(user.getEffectiveName(), null, user.getEffectiveAvatarUrl())
                             .setColor(EmbedColor.ERROR.color)
                             .setDescription("Your bet: " + FlopBot.COIN_EMOJI + " " + NumberFormat.FORMATTER.format(bet))
                             .addField("Crashed At", multiplierString, true)
@@ -119,7 +119,7 @@ public class CrashCommand extends Command {
                     int profit = (int) (bet * game.currMultiplier);
                     EmbedBuilder updateEmbed = new EmbedBuilder()
                             .setColor(EmbedColor.DEFAULT.color)
-                            .setAuthor(user.getAsTag(), null, user.getEffectiveAvatarUrl())
+                            .setAuthor(user.getEffectiveName(), null, user.getEffectiveAvatarUrl())
                             .setDescription("Your bet: " + FlopBot.COIN_EMOJI + " " + NumberFormat.FORMATTER.format(bet))
                             .addField("Multiplier", multiplierString, true)
                             .addField("Profit", FlopBot.COIN_EMOJI + " " + NumberFormat.FORMATTER.format(profit), true);
@@ -148,7 +148,7 @@ public class CrashCommand extends Command {
         String multiplierString = "x" + String.format("%.2f", game.currMultiplier);
         return new EmbedBuilder()
                 .setColor(EmbedColor.SUCCESS.color)
-                .setAuthor(user.getAsTag(), null, user.getEffectiveAvatarUrl())
+                .setAuthor(user.getEffectiveName(), null, user.getEffectiveAvatarUrl())
                 .setDescription("Your bet: " + FlopBot.COIN_EMOJI + " " + NumberFormat.FORMATTER.format(game.bet))
                 .addField("Multiplier", multiplierString, true)
                 .addField("Win", FlopBot.COIN_EMOJI + " " + NumberFormat.FORMATTER.format(profit), true)

@@ -112,7 +112,7 @@ public class SlotsCommand extends Command {
 
         // Build the embed message
         EmbedBuilder embed = new EmbedBuilder()
-                .setAuthor(user.getAsTag(), null, user.getEffectiveAvatarUrl());
+                .setAuthor(user.getEffectiveName(), null, user.getEffectiveAvatarUrl());
         if (isWinner) {
             embed.setColor(EmbedColor.SUCCESS.color);
             embed.setDescription("You won " + FlopBot.COIN_EMOJI + " " + earnings + "\n\n");
