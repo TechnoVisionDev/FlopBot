@@ -26,7 +26,7 @@ public class CoinStatsCommand extends Command {
     public CoinStatsCommand(FlopBot bot) {
         super(bot);
         this.name = "coinstats";
-        this.description = "Get stats for any crypto by its ticker symbol.";
+        this.description = "Display stats for any crypto by its ticker symbol.";
         this.category = Category.UTILITY;
         this.args.add(new OptionData(OptionType.STRING, "ticker", "Coin ticker symbol", true));
     }

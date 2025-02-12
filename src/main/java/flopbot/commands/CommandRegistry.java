@@ -11,6 +11,7 @@ import flopbot.commands.fun.SayCommand;
 import flopbot.commands.links.*;
 import flopbot.commands.utility.CoinStatsCommand;
 import flopbot.commands.utility.HelpCommand;
+import flopbot.commands.utility.NetworkCommand;
 import flopbot.commands.utility.RolesCommand;
 import flopbot.commands.wallet.BalanceCommand;
 import flopbot.commands.wallet.WithdrawCommand;
@@ -64,6 +65,7 @@ public class CommandRegistry extends ListenerAdapter {
                 new CrashCommand(bot),
                 //Category: UTILITY
                 new CoinStatsCommand(bot),
+                new NetworkCommand(bot),
                 new RolesCommand(bot),
                 new HelpCommand(bot) // MUST BE LAST COMMAND REGISTERED!
         );
