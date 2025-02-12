@@ -9,6 +9,7 @@ import flopbot.commands.faucet.DonateCommand;
 import flopbot.commands.faucet.FaucetCommand;
 import flopbot.commands.fun.SayCommand;
 import flopbot.commands.links.*;
+import flopbot.commands.utility.CoinStatsCommand;
 import flopbot.commands.utility.HelpCommand;
 import flopbot.commands.utility.RolesCommand;
 import flopbot.commands.wallet.BalanceCommand;
@@ -62,6 +63,7 @@ public class CommandRegistry extends ListenerAdapter {
                 new SlotsCommand(bot),
                 new CrashCommand(bot),
                 //Category: UTILITY
+                new CoinStatsCommand(bot),
                 new RolesCommand(bot),
                 new HelpCommand(bot) // MUST BE LAST COMMAND REGISTERED!
         );
