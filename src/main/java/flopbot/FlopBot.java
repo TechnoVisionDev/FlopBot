@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import flopbot.commands.CommandRegistry;
 import flopbot.data.Database;
 import flopbot.handlers.ButtonHandler;
+import flopbot.handlers.StatsHandler;
 import flopbot.handlers.WalletHandler;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
@@ -81,7 +82,8 @@ public class FlopBot {
         // Add Commands and Listeners
         jda.addEventListener(
                 new CommandRegistry(this),
-                new ButtonHandler(this)
+                new ButtonHandler(this),
+                new StatsHandler(config)
         );
     }
 
