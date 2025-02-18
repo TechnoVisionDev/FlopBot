@@ -77,6 +77,7 @@ public class FlopBot {
         jda = JDABuilder.createLight(token, EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT))
                 .setStatus(OnlineStatus.ONLINE)
                 .setActivity(Activity.customStatus("/help | flopcoin.net"))
+                .setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
                 .build();
 
         // Add Commands and Listeners
