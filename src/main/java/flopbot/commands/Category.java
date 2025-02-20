@@ -9,7 +9,7 @@ package flopbot.commands;
 public enum Category {
     FAUCET(":ocean: ", "Faucet"),
     UTILITY(":tools: ", "Utility"),
-    FUN(":smile:", "Fun"),
+    STAKING(":bar_chart:", "Staking"),
     CASINO(":game_die:", "Casino"),
     WALLET(":moneybag:", "Wallet"),
     LINKS(":globe_with_meridians:", "Links");

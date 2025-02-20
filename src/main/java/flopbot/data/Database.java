@@ -7,10 +7,10 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Indexes;
+import flopbot.data.cache.Stake;
 import flopbot.data.cache.Wallet;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
-import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
 
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
@@ -25,6 +25,7 @@ public class Database {
 
     /** Collections */
     public @NotNull MongoCollection<Wallet> wallets;
+    public @NotNull MongoCollection<Stake> stakes;
 
     /**
      * Connect to database using MongoDB URI and
@@ -45,8 +46,10 @@ public class Database {
 
         // Initialize collections if they don't exist.
         wallets = database.getCollection("wallets", Wallet.class);
+        stakes = database.getCollection("stakes", Stake.class);
 
-        Bson userIndex = Indexes.descending("user");
-        wallets.createIndex(userIndex);
+        // Add custom indexing to collections
+        wallets.createIndex(Indexes.descending("user"));
+        stakes.createIndex(Indexes.ascending("txid"));
     }
 }

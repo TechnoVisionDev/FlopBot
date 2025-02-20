@@ -7,8 +7,10 @@ import flopbot.commands.casino.CrashCommand;
 import flopbot.commands.casino.SlotsCommand;
 import flopbot.commands.faucet.DonateCommand;
 import flopbot.commands.faucet.FaucetCommand;
-import flopbot.commands.fun.SayCommand;
 import flopbot.commands.links.*;
+import flopbot.commands.staking.EndStakeCommand;
+import flopbot.commands.staking.MyStakesCommand;
+import flopbot.commands.staking.StakeCommand;
 import flopbot.commands.utility.CoinStatsCommand;
 import flopbot.commands.utility.HelpCommand;
 import flopbot.commands.utility.NetworkCommand;
@@ -56,8 +58,10 @@ public class CommandRegistry extends ListenerAdapter {
                 //Category: FAUCET
                 new FaucetCommand(bot),
                 new DonateCommand(bot),
-                //Category: FUN
-                new SayCommand(bot),
+                //Category: STAKING
+                new StakeCommand(bot),
+                new MyStakesCommand(bot),
+                new EndStakeCommand(bot),
                 //Category: CASINO
                 new BlackjackCommand(bot),
                 new CoinflipCommand(bot),
