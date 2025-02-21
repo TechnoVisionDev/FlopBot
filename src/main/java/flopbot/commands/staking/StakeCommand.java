@@ -31,10 +31,11 @@ public class StakeCommand extends Command {
         this.category = Category.STAKING;
 
         // Define subcommands:
-        this.subCommands.add(new SubcommandData("info", "Learn how to stake your coins"));
+        this.subCommands.add(new SubcommandData("help", "Learn how to stake your coins"));
+        this.subCommands.add(new SubcommandData("stats", "Display server-wide stats for coin staking."));
         this.subCommands.add(new SubcommandData("new", "Stake your coins to earn rewards each month")
                 .addOptions(new OptionData(OptionType.STRING, "txid", "The transaction ID used for staking", true))
-                .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of FLOP to stake", true).setMinValue(1))
+                .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of FLOP to stake (max 500M)", true).setMinValue(1).setMaxValue(500000000))
         );
         this.subCommands.add(new SubcommandData("list", "Display all of your active stakes"));
         this.subCommands.add(new SubcommandData("end", "End an active stake after 1 month to receive a 2% reward")
@@ -59,7 +60,10 @@ public class StakeCommand extends Command {
             case "end":
                 new StakeEndCommand(bot).execute(event);
                 break;
-            case "info":
+            case "stats":
+                new StakeStatsCommand(bot).execute(event);
+                break;
+            case "help":
                 event.replyEmbeds(stakeHelpEmbed).queue();
                 break;
             default:

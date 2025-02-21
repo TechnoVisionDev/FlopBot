@@ -6,6 +6,7 @@ import flopbot.commands.Category;
 import flopbot.commands.Command;
 import flopbot.data.cache.Stake;
 import flopbot.util.embeds.EmbedColor;
+import flopbot.util.embeds.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
@@ -52,7 +53,7 @@ public class StakeListCommand extends Command {
         }
 
         if (activeStakes.isEmpty()) {
-            event.getHook().sendMessage("You have no active stakes at this time.").queue();
+            event.getHook().sendMessageEmbeds(EmbedUtils.createError("You have no active stakes at this time.")).queue();
             return;
         }
 
@@ -70,8 +71,7 @@ public class StakeListCommand extends Command {
             String formattedDate = date.format(dateFormatter);
             String title = amountFormatter.format(stake.getAmount()) + " FLOP";
             String details = "**Date:** " + formattedDate + "\n"
-                    + "**TXID:** [View on Explorer](https://explorer.flopcoin.net/tx/" + stake.getTxid() + ")\n"
-                    + "**Vout:** " + stake.getVout();
+                    + "**TXID:** [View on Explorer](https://explorer.flopcoin.net/tx/" + stake.getTxid() + ")";
             eb.addField(title, details, false);
         }
         event.getHook().sendMessageEmbeds(eb.build()).queue();

@@ -5,7 +5,10 @@ import flopbot.FlopBot;
 import flopbot.commands.Category;
 import flopbot.commands.Command;
 import flopbot.data.cache.Stake;
+import flopbot.util.embeds.EmbedColor;
 import flopbot.util.embeds.EmbedUtils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,9 +18,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.Base64;
 
 public class StakeNewCommand extends Command {
+
+    private static final DecimalFormat amountFormatter = new DecimalFormat("#,##0.##");
 
     public StakeNewCommand(FlopBot bot) {
         super(bot);
@@ -92,18 +98,21 @@ public class StakeNewCommand extends Command {
             event.getHook().sendMessageEmbeds(EmbedUtils.createError("No valid reward address found for this UTXO.")).queue();
             return;
         }
-        String rewardWallet = addresses.getString(0);
 
         // Create a new Stake instance.
+        String rewardWallet = addresses.getString(0);
         Stake newStake = new Stake(userId, txid, vout, rewardWallet, amount);
-        // (Ensure your Stake constructor sets the startTime to System.currentTimeMillis())
 
         try {
             bot.database.stakes.insertOne(newStake);
-            event.getHook().sendMessageEmbeds(EmbedUtils.createSuccess("Stake submitted successfully! Tracking confirmations.")).queue();
+            MessageEmbed embed = new EmbedBuilder()
+                    .setColor(EmbedColor.SUCCESS.color)
+                    .setDescription("Your stake of " + FlopBot.COIN_EMOJI + " **" + amountFormatter.format(newStake.getAmount()) + " FLOP** was submitted successfully!\nYou can view all of your active stakes using the `/stake list` command!")
+                    .build();
+            event.getHook().sendMessageEmbeds(embed).queue();
         } catch (Exception e) {
             e.printStackTrace();
-            event.getHook().sendMessageEmbeds(EmbedUtils.createError("An error occurred while processing the stake.")).queue();
+            event.getHook().sendMessageEmbeds(EmbedUtils.createError("An error occurred while processing your stake. Contact an admin!")).queue();
         }
     }
 
@@ -117,8 +126,10 @@ public class StakeNewCommand extends Command {
             jsonParams.put(param);
         }
         jsonRequest.put("params", jsonParams);
+
         String auth = FlopBot.RPC_USER + ":" + FlopBot.RPC_PASSWORD;
         String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(FlopBot.RPC_URL))
@@ -126,12 +137,18 @@ public class StakeNewCommand extends Command {
                 .header("Authorization", "Basic " + encodedAuth)
                 .POST(HttpRequest.BodyPublishers.ofString(jsonRequest.toString()))
                 .build();
+
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         JSONObject jsonResponse = new JSONObject(response.body());
+
+        // Check for an error in the response.
         if (!jsonResponse.isNull("error") && !jsonResponse.get("error").toString().equals("null")) {
             JSONObject errorObj = jsonResponse.getJSONObject("error");
             throw new Exception(errorObj.optString("message", "Unknown RPC error"));
         }
-        return jsonResponse.getJSONObject("result");
+
+        // Instead of getJSONObject, use optJSONObject so it quietly returns null.
+        return jsonResponse.optJSONObject("result");
     }
+
 }
