@@ -10,6 +10,7 @@ public class Stake {
     private String rewardWallet;
     private double amount;
     private long startTime;
+    private long lastClaim;
 
     // Default no-args constructor
     public Stake() {
@@ -22,6 +23,7 @@ public class Stake {
         this.vout = vout;
         this.amount = amount;
         this.startTime = System.currentTimeMillis();
+        this.lastClaim = System.currentTimeMillis();
     }
 
     public long getStartTime() {
@@ -78,5 +80,13 @@ public class Stake {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public long getLastClaim() {
+        return lastClaim;
+    }
+
+    public void setLastClaim(long lastClaim) {
+        this.lastClaim = lastClaim;
     }
 }

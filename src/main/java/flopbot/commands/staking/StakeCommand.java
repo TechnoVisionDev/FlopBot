@@ -16,12 +16,13 @@ public class StakeCommand extends Command {
     public static final MessageEmbed stakeHelpEmbed = new EmbedBuilder()
                 .setTitle("How to Stake Flopcoin")
                 .setColor(EmbedColor.DEFAULT.color)
-                .setDescription("You can stake your coins by locking them in a UXTO and holding them without spending. Each month you stake coins earns you 2% of the staked amount!")
+                .setDescription("You can stake your coins by locking them in a UXTO and holding them without spending. You can earn daily rewards for these stakes proportional to the total amount staked. The reward pool is 20% of the total faucet balance.")
                 .addField("Step 1: Create a UTXO", "Open your [Flopcoin Core Wallet](https://github.com/Flopcoin/Flopcoin/releases) and send any amount of coins to YOURSELF. Do NOT send them to a different wallet. The amount of coins you send to yourself will determine the amount that is staked.", false)
                 .addField("Step 2: Lock the UTXO You Created", "To prevent your UXTO from accidentally being spent, go to your core wallet and \"enable coin control features\" under preferences->wallet. Next head to the \"Send\" tab and click the \"Inputs\" button. Find the transaction you made and right click it to \"Lock\" the funds. You can unlock it again at any time!", false)
-                .addField("Step 3: Create a New Stake", "Use the `/stake new [txid] [amount]` command to create a new stake. Make sure the TXID and amount match the transaction you just created.", false)
-                .addField("Step 4: Wait Atleast 1 Month", "Now you must wait 1 month before earning your rewards. It's VERY important that you don't spend or touch any of the coins in the UTXO you created (see step 2). You can keep track of your active stakes with the `/stake list` command.", false)
-                .addField("Step 5: End Stake to Earn Rewards", "You can now use the `/stake end [txid]` command to end your stake and receive your rewards. They will be sent to your balance on FlopBot, which can be viewed using the `/balance` command and withdrawn at any time!", false)
+                .addField("Step 3: Create a New Stake", "Use the `/stake new [txid] [amount]` command to create a new stake. Make sure the TXID and amount match the transaction you just created. You must stake within 10 confirmations of creating the UTXO.", false)
+                .addField("Step 4: Claim Rewards Every Day", "Use the `/stake claim [txid]` to claim stake rewards every day. Rewards will be sent to your balance on FlopBot, which can be viewed using the `/balance` command and withdrawn at any time!", false)
+                .addField("Step 5: Manage Active Stakes", "If your stake UTXO is spent or tampered with, your stake will be automatically removed. You can keep track of your active stakes with the `/stake list` command.", false)
+                .addField("Step 5: End Stakes", "You can now use the `/stake end [txid]` command to end your stake at any time, which will remove them from the active list of tracked stakes.", false)
                 .build();
 
     public StakeCommand(FlopBot bot) {
@@ -31,14 +32,17 @@ public class StakeCommand extends Command {
         this.category = Category.STAKING;
 
         // Define subcommands:
-        this.subCommands.add(new SubcommandData("help", "Learn how to stake your coins"));
+        this.subCommands.add(new SubcommandData("help", "Learn how to stake your coins."));
         this.subCommands.add(new SubcommandData("stats", "Display server-wide stats for coin staking."));
-        this.subCommands.add(new SubcommandData("new", "Stake your coins to earn rewards each month")
+        this.subCommands.add(new SubcommandData("new", "Stake your coins to earn rewards each month.")
                 .addOptions(new OptionData(OptionType.STRING, "txid", "The transaction ID used for staking", true))
                 .addOptions(new OptionData(OptionType.NUMBER, "amount", "The amount of FLOP to stake (max 500M)", true).setMinValue(1).setMaxValue(500000000))
         );
-        this.subCommands.add(new SubcommandData("list", "Display all of your active stakes"));
-        this.subCommands.add(new SubcommandData("end", "End an active stake after 1 month to receive a 2% reward")
+        this.subCommands.add(new SubcommandData("list", "Display all of your active stakes."));
+        this.subCommands.add(new SubcommandData("end", "End an active stake.")
+                .addOptions(new OptionData(OptionType.STRING, "txid", "The transaction ID of an active stake", true))
+        );
+        this.subCommands.add(new SubcommandData("claim", "Claim daily rewards for an active stake.")
                 .addOptions(new OptionData(OptionType.STRING, "txid", "The transaction ID of an active stake", true))
         );
     }
@@ -62,6 +66,9 @@ public class StakeCommand extends Command {
                 break;
             case "stats":
                 new StakeStatsCommand(bot).execute(event);
+                break;
+            case "claim":
+                new StakeClaimCommand(bot).execute(event);
                 break;
             case "help":
                 event.replyEmbeds(stakeHelpEmbed).queue();
