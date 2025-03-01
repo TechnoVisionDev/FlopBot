@@ -30,7 +30,6 @@ public class BalanceCommand extends Command {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        event.deferReply().queue();
         try {
             User user = event.getUser();
             String name = user.getEffectiveName();
@@ -47,10 +46,10 @@ public class BalanceCommand extends Command {
                     .setThumbnail(user.getEffectiveAvatarUrl())
                     .setColor(EmbedColor.DEFAULT.color)
                     .build();
-            event.getHook().editOriginalEmbeds(embed).queue();
+            event.replyEmbeds(embed).queue();
 
         } catch (IOException e) {
-            event.getHook().editOriginalEmbeds(EmbedUtils.createError("An error occurred. Please try again!")).queue();
+            event.replyEmbeds(EmbedUtils.createError("An error occurred. Please try again!")).queue();
         }
     }
 }
