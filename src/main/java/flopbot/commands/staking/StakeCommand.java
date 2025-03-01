@@ -16,7 +16,7 @@ public class StakeCommand extends Command {
     public static final MessageEmbed stakeHelpEmbed = new EmbedBuilder()
                 .setTitle("How to Stake Flopcoin")
                 .setColor(EmbedColor.DEFAULT.color)
-                .setDescription("You can stake your coins by locking them in a UXTO and holding them without spending. You can earn daily rewards for these stakes proportional to the total amount staked. The reward pool is 20% of the total faucet balance.")
+                .setDescription("You can stake your coins by locking them in a UXTO and holding them without spending. You can earn daily rewards for these stakes proportional to the total amount staked. The reward pool is 10% of the total faucet balance.")
                 .addField("Step 1: Create a UTXO", "Open your [Flopcoin Core Wallet](https://github.com/Flopcoin/Flopcoin/releases) and send any amount of coins to YOURSELF. Do NOT send them to a different wallet. The amount of coins you send to yourself will determine the amount that is staked.", false)
                 .addField("Step 2: Lock the UTXO You Created", "To prevent your UXTO from accidentally being spent, go to your core wallet and \"enable coin control features\" under preferences->wallet. Next head to the \"Send\" tab and click the \"Inputs\" button. Find the transaction you made and right click it to \"Lock\" the funds. You can unlock it again at any time!", false)
                 .addField("Step 3: Create a New Stake", "Use the `/stake new [txid] [amount]` command to create a new stake. Make sure the TXID and amount match the transaction you just created. You must stake within 10 confirmations of creating the UTXO.", false)

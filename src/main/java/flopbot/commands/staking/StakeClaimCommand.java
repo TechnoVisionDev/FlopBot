@@ -92,7 +92,7 @@ public class StakeClaimCommand extends Command {
 
         // Retrieve the faucet balance and calculate the daily reward pool.
         double faucetBalance = bot.getFaucetBalance();
-        double monthlyRewardPool = faucetBalance * 0.2; // 20% of faucet balance distributed monthly.
+        double monthlyRewardPool = faucetBalance * 0.1; // 10% of faucet balance distributed monthly.
         double dailyRewardPool = monthlyRewardPool / 30.0; // Distribute evenly over 30 days.
 
         // Calculate the user's share of the daily reward pool.

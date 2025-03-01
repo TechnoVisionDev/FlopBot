@@ -36,14 +36,16 @@ public class StakeStatsCommand extends Command {
         for (Stake stake : stakes) {
             totalStaked += stake.getAmount();
         }
-        double pendingRewards = totalStaked * 0.02;
+        double monthlyRewardPool = bot.getFaucetBalance() * 0.1;
+        double dailyRewardPool = monthlyRewardPool / 30;
 
         MessageEmbed embed = new EmbedBuilder()
                 .setColor(EmbedColor.DEFAULT.color)
                 .setTitle("Flopcoin Staking Statistics")
-                .setDescription("Server wide stats for staking")
-                .addField("Amount Staked",  FlopBot.COIN_EMOJI + " " + amountFormatter.format(totalStaked) + " FLOP", false)
-                .addField("Pending Rewards", FlopBot.COIN_EMOJI + " " + amountFormatter.format(pendingRewards) + " FLOP", false)
+                .setDescription("Server wide staking statistics")
+                .addField("Total Amount Staked",  FlopBot.COIN_EMOJI + " " + amountFormatter.format(totalStaked) + " FLOP", false)
+                .addField("Monthly Reward Pool", FlopBot.COIN_EMOJI + " " + amountFormatter.format(monthlyRewardPool) + " FLOP", false)
+                .addField("Daily Reward Pool", FlopBot.COIN_EMOJI + " " + amountFormatter.format(dailyRewardPool) + " FLOP", false)
                 .build();
 
         event.getHook().sendMessageEmbeds(embed).queue();
