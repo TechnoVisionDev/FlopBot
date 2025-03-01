@@ -43,6 +43,6 @@ public class StakeEndCommand extends Command {
         // Delete stakes
         bot.database.stakes.deleteOne(Filters.eq("_id", stake.getId()));
 
-        event.replyEmbeds(EmbedUtils.createSuccess("You have canceled your stake! You can now spent these funds!")).queue();
+        event.getHook().sendMessageEmbeds(EmbedUtils.createSuccess("You have canceled your stake! You can now spent these funds!")).queue();
     }
 }
