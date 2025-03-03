@@ -106,7 +106,6 @@ public class StakeClaimCommand extends Command {
 
         // Send the reward to the user.
         try {
-            System.out.println(stake.getRewardAddress());
             String rewardTXID = sendToAddressRPC(stake.getRewardAddress(), rewardAmount);
 
             // Update the stake's last claim time.
