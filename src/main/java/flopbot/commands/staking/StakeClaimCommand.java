@@ -127,7 +127,7 @@ public class StakeClaimCommand extends Command {
                     .setTitle("Daily Stake Reward Claimed!")
                     .setColor(EmbedColor.SUCCESS.color)
                     .setThumbnail("https://cdn-icons-png.flaticon.com/512/10384/10384161.png")
-                    .setDescription("Your daily stake reward has been credited to your account!\nUse `/balance` and `/withdraw` to manage your funds.")
+                    .setDescription("Your daily stake reward has been sent to your wallet!\nPlease allow a few minutes for the transaction to confirm.")
                     .addField("Staked Amount", amountFormatter.format(userStakeAmount) + " FLOP", false)
                     .addField("Reward Amount", amountFormatter.format(rewardAmount) + " FLOP", false)
                     .addField("Stake Percentage", stakePercentage, false)
