@@ -15,6 +15,10 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -98,36 +102,46 @@ public class StakeClaimCommand extends Command {
         // Calculate the user's share of the daily reward pool.
         double userStakeAmount = stake.getAmount();
         double userShare = userStakeAmount / totalStaked;
-        long rewardAmount = (long) (dailyRewardPool * userShare);
+        int rewardAmount = (int) (dailyRewardPool * userShare);
 
         // Send the reward to the user.
-        bot.walletHandler.sendCoins(userId, rewardAmount);
+        try {
+            System.out.println(stake.getRewardAddress());
+            String rewardTXID = sendToAddressRPC(stake.getRewardAddress(), rewardAmount);
 
-        // Update the stake's last claim time.
-        stake.setLastClaim(now);
-        bot.database.stakes.replaceOne(Filters.eq("_id", stake.getId()), stake);
+            // Update the stake's last claim time.
+            stake.setLastClaim(now);
+            bot.database.stakes.replaceOne(Filters.eq("_id", stake.getId()), stake);
 
-        // Calculate percentage of total staked as a whole number,
-        // but if less than 1%, display "< 1%".
-        double percentageValue = userShare * 100.0;
-        String stakePercentage;
-        if (percentageValue < 1.0) {
-            stakePercentage = "< 1%";
-        } else {
-            stakePercentage = String.format("%d%%", (int) percentageValue);
+            // Calculate percentage of total staked as a whole number,
+            // but if less than 1%, display "< 1%".
+            double percentageValue = userShare * 100.0;
+            String stakePercentage;
+            if (percentageValue < 1.0) {
+                stakePercentage = "< 1%";
+            } else {
+                stakePercentage = String.format("%d%%", (int) percentageValue);
+            }
+
+            MessageEmbed successMessage = new EmbedBuilder()
+                    .setTitle("Daily Stake Reward Claimed!")
+                    .setColor(EmbedColor.SUCCESS.color)
+                    .setThumbnail("https://cdn-icons-png.flaticon.com/512/10384/10384161.png")
+                    .setDescription("Your daily stake reward has been credited to your account!\nUse `/balance` and `/withdraw` to manage your funds.")
+                    .addField("Staked Amount", amountFormatter.format(userStakeAmount) + " FLOP", false)
+                    .addField("Reward Amount", amountFormatter.format(rewardAmount) + " FLOP", false)
+                    .addField("Stake Percentage", stakePercentage, false)
+                    .addField("Stake TXID", "[View on Explorer](https://explorer.flopcoin.net/tx/" + stake.getTxid() + ")", false)
+                    .addField("Reward TXID", "[View on Explorer](https://explorer.flopcoin.net/tx/" + rewardTXID + ")", false)
+                    .build();
+            event.getHook().sendMessageEmbeds(successMessage).queue();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            event.getHook()
+                    .sendMessageEmbeds(EmbedUtils.createError("An error occurred while trying to claim stake reward. Please contact an admin!"))
+                    .queue();
         }
-
-        MessageEmbed successMessage = new EmbedBuilder()
-                .setTitle("Daily Stake Reward Claimed!")
-                .setColor(EmbedColor.SUCCESS.color)
-                .setThumbnail("https://cdn-icons-png.flaticon.com/512/10384/10384161.png")
-                .setDescription("Your daily stake reward has been credited to your account!\nUse `/balance` and `/withdraw` to manage your funds.")
-                .addField("Staked Amount", amountFormatter.format(userStakeAmount) + " FLOP", false)
-                .addField("Reward Amount", amountFormatter.format(rewardAmount) + " FLOP", false)
-                .addField("Stake Percentage", stakePercentage, false)
-                .addField("Stake TXID", "[View on Explorer](https://explorer.flopcoin.net/tx/" + stake.getTxid() + ")", false)
-                .build();
-        event.getHook().sendMessageEmbeds(successMessage).queue();
     }
 
     private boolean isUTXOSpent(String txid, int vout) {
@@ -168,5 +182,45 @@ public class StakeClaimCommand extends Command {
             return null;
         }
         return jsonResponse.getJSONObject("result");
+    }
+
+    /**
+     * Sends a JSON‑RPC request to the Flopcoin Core node to withdraw funds.
+     *
+     * @param address The destination wallet address.
+     * @param amount  The amount of FLOP to withdraw.
+     * @return The transaction ID returned by the node.
+     * @throws Exception if the RPC call fails or the node returns an error.
+     */
+    private String sendToAddressRPC(String address, int amount) throws Exception {
+        JSONObject jsonRequest = new JSONObject();
+        jsonRequest.put("jsonrpc", "1.0");
+        jsonRequest.put("id", "withdraw");
+        jsonRequest.put("method", "sendtoaddress");
+        JSONArray params = new JSONArray();
+        params.put(address);
+        params.put(amount);
+        jsonRequest.put("params", params);
+
+        String auth = FlopBot.RPC_USER + ":" + FlopBot.RPC_PASSWORD;
+        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(FlopBot.RPC_URL))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Basic " + encodedAuth)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonRequest.toString()))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        JSONObject jsonResponse = new JSONObject(response.body());
+
+        if (!jsonResponse.isNull("error") && !jsonResponse.get("error").toString().equals("null")) {
+            JSONObject errorObj = jsonResponse.getJSONObject("error");
+            throw new Exception(errorObj.optString("message", "Unknown RPC error"));
+        }
+
+        return jsonResponse.get("result").toString();
     }
 }

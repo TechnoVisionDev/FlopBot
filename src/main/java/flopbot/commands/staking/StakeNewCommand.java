@@ -44,6 +44,7 @@ public class StakeNewCommand extends Command {
         // Check if the stake already exists.
         if (bot.database.stakes.find(Filters.eq("txid", txid)).first() != null) {
             event.getHook().sendMessageEmbeds(EmbedUtils.createError("This stake has already been submitted!")).queue();
+            event.getHook().sendMessageEmbeds(EmbedUtils.createError("This stake has already been submitted!")).queue();
             return;
         }
 

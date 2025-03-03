@@ -7,7 +7,7 @@ public class Stake {
     private long userId;
     private String txid;
     private int vout;
-    private String rewardWallet;
+    private String rewardAddress;
     private double amount;
     private long startTime;
     private long lastClaim;
@@ -16,7 +16,7 @@ public class Stake {
     public Stake() {
     }
 
-    public Stake(long userId, String txid, int vout, String rewardWallet, double amount) {
+    public Stake(long userId, String txid, int vout, String rewardAddress, double amount) {
         id = new ObjectId();
         this.userId = userId;
         this.txid = txid;
@@ -24,6 +24,7 @@ public class Stake {
         this.amount = amount;
         this.startTime = System.currentTimeMillis();
         this.lastClaim = System.currentTimeMillis();
+        this.rewardAddress = rewardAddress;
     }
 
     public long getStartTime() {
@@ -66,12 +67,12 @@ public class Stake {
         this.vout = vout;
     }
 
-    public String getRewardWallet() {
-        return rewardWallet;
+    public String getRewardAddress() {
+        return rewardAddress;
     }
 
-    public void setRewardWallet(String rewardWallet) {
-        this.rewardWallet = rewardWallet;
+    public void setRewardAddress(String rewardAddress) {
+        this.rewardAddress = rewardAddress;
     }
 
     public double getAmount() {
