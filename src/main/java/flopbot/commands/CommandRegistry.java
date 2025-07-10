@@ -1,20 +1,9 @@
 package flopbot.commands;
 
 import flopbot.FlopBot;
-import flopbot.commands.casino.BlackjackCommand;
-import flopbot.commands.casino.CoinflipCommand;
-import flopbot.commands.casino.CrashCommand;
-import flopbot.commands.casino.SlotsCommand;
-import flopbot.commands.faucet.DonateCommand;
-import flopbot.commands.faucet.FaucetCommand;
 import flopbot.commands.links.*;
-import flopbot.commands.staking.StakeCommand;
-import flopbot.commands.utility.CoinStatsCommand;
 import flopbot.commands.utility.HelpCommand;
-import flopbot.commands.utility.NetworkCommand;
 import flopbot.commands.utility.RolesCommand;
-import flopbot.commands.wallet.BalanceCommand;
-import flopbot.commands.wallet.WithdrawCommand;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -47,7 +36,7 @@ public class CommandRegistry extends ListenerAdapter {
                 new WebsiteCommand(bot),
                 new ExplorerCommand(bot),
                 new PoolsCommand(bot),
-                new InscriptionsCommand(bot),
+                //new InscriptionsCommand(bot),
                 new GithubCommand(bot),
                 new WhitepaperCommand(bot),
                 //Category: WALLET
@@ -57,11 +46,9 @@ public class CommandRegistry extends ListenerAdapter {
                 //Category: FAUCET
                 new FaucetCommand(bot),
                 new DonateCommand(bot),
-                 */
                 //Category: STAKING
                 new StakeCommand(bot),
                 //Category: CASINO
-                /**
                 new BlackjackCommand(bot),
                 new CoinflipCommand(bot),
                 new SlotsCommand(bot),
