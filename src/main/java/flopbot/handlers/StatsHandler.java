@@ -18,23 +18,28 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A simplified stats handler that updates two channels:
+ * A simplified stats handler that updates four channels:
  * - One showing the total Discord member count.
  * - One displaying the current FLOP coin price from CoinPaprika.
+ * - One displaying the 24 h Volume.
+ * - One displaying the Market Cap.
  */
 public class StatsHandler extends ListenerAdapter {
 
     private static final Logger LOGGER = Logger.getLogger(StatsHandler.class.getName());
 
     // Channel name prefixes
-    private static final String DISCORD_CHANNEL_PREFIX = "\uD83D\uDE80 MEMBERS: ";
+    private static final String DISCORD_CHANNEL_PREFIX   = "\uD83D\uDE80 MEMBERS: ";
     private static final String FLOP_PRICE_CHANNEL_PREFIX = "\uD83D\uDCB2FLOP: $";
+    private static final String FLOP_VOL_CHANNEL_PREFIX   = "\uD83D\uDCB2VOL: $";
+    private static final String FLOP_MC_CHANNEL_PREFIX    = "\uD83D\uDCB2MC: $";
 
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.########");
+    public static final DecimalFormat SUFFIX_FORMAT = new DecimalFormat("0.###");
 
     // CoinPaprika coin ID for FLOP.
-    // Change this value if your coin uses a different ID on CoinPaprika.
     public static final String COIN_PAPRIKA_ID = "flop-flopcoin";
+    public static final String SUPPLY_URL      = "https://explorer.flopcoin.net/ext/getmoneysupply";
 
     // Required configuration from environment variables or .env file
     private final @NotNull String GUILD_ID;
@@ -45,7 +50,7 @@ public class StatsHandler extends ListenerAdapter {
 
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event) {
-        // Schedule updates every 5 minutes (300,000 milliseconds)
+        // Schedule updates every hour (3_600_000 ms)
         new Timer().schedule(new UpdateTask(event.getJDA(), this), 0, 3_600_000);
     }
 
@@ -62,51 +67,59 @@ public class StatsHandler extends ListenerAdapter {
         @Override
         public void run() {
             Guild guild = jda.getGuildById(statsHandler.GUILD_ID);
-            if (guild == null) { return; }
+            if (guild == null) return;
 
             try {
-                // Fetch FLOP coin price from CoinPaprika API
-                double rate = fetchCoinPrice();
-                String price = DECIMAL_FORMAT.format(rate);
+                // Fetch the USD quote object once
+                JSONObject usdQuote = fetchUsdQuote();
 
-                // Get total Discord member count
-                int discordMemberCount = guild.getMemberCount();
+                double price     = usdQuote.getDouble("price");
+                double volume24h = usdQuote.getDouble("volume_24h");
 
-                // Update channels with the latest stats
-                updateChannel(guild, DISCORD_CHANNEL_PREFIX, DISCORD_CHANNEL_PREFIX + discordMemberCount);
-                updateChannel(guild, FLOP_PRICE_CHANNEL_PREFIX, FLOP_PRICE_CHANNEL_PREFIX + price);
+                // Get circulating supply from your explorer
+                double supply    = fetchMoneySupply();
+
+                // Compute market cap
+                double marketCap = price * supply;
+
+                String priceStr = DECIMAL_FORMAT.format(price);
+                String volStr   = formatWithSuffix(volume24h);
+                String mcStr    = formatWithSuffix(marketCap);
+
+                int memberCount = guild.getMemberCount();
+
+                // Update (or create) each channel
+                updateChannel(guild, DISCORD_CHANNEL_PREFIX,   DISCORD_CHANNEL_PREFIX   + memberCount);
+                updateChannel(guild, FLOP_PRICE_CHANNEL_PREFIX, FLOP_PRICE_CHANNEL_PREFIX + priceStr);
+                updateChannel(guild, FLOP_VOL_CHANNEL_PREFIX,   FLOP_VOL_CHANNEL_PREFIX   + volStr);
+                updateChannel(guild, FLOP_MC_CHANNEL_PREFIX,    FLOP_MC_CHANNEL_PREFIX    + mcStr);
+
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error updating channels", e);
             }
         }
 
-        /**
-         * Updates an existing voice channel (matching the prefix) or creates it if it doesn't exist.
-         *
-         * @param guild   the guild where the channel is located
-         * @param prefix  the channel name prefix to look for
-         * @param newName the new channel name
-         */
-        private void updateChannel(Guild guild, String prefix, String newName) {
-            for (VoiceChannel channel : guild.getVoiceChannels()) {
-                if (channel.getName().startsWith(prefix)) {
-                    if (!channel.getName().equals(newName)) { // Update only if the name has changed
-                        channel.getManager().setName(newName).queue();
-                    }
-                    return;
+        private double fetchMoneySupply() throws IOException {
+            Request req = new Request.Builder()
+                    .url(SUPPLY_URL)
+                    .header("User-Agent", "FlopBot/1.0")
+                    .build();
+
+            try (Response resp = httpClient.newCall(req).execute()) {
+                if (!resp.isSuccessful()) {
+                    LOGGER.warning("Explorer API error: " + resp);
+                    throw new IOException("Unexpected explorer response " + resp);
                 }
+                // The endpoint returns the supply as a plain number string
+                String body = resp.body().string().trim();
+                return Double.parseDouble(body);
             }
-            // No matching channel found; create a new one.
-            guild.createVoiceChannel(newName).queue();
         }
 
         /**
-         * Fetches the current coin price from the CoinPaprika API.
-         *
-         * @return the coin price in USD, or 0.0 if an error occurs
-         * @throws IOException if an I/O error occurs during the API call
+         * Fetches the USD quote object from CoinPaprika.
          */
-        private double fetchCoinPrice() throws IOException {
+        private JSONObject fetchUsdQuote() throws IOException {
             String url = "https://api.coinpaprika.com/v1/tickers/" + COIN_PAPRIKA_ID;
             Request request = new Request.Builder()
                     .url(url)
@@ -116,11 +129,44 @@ public class StatsHandler extends ListenerAdapter {
             try (Response response = httpClient.newCall(request).execute()) {
                 if (!response.isSuccessful()) {
                     LOGGER.warning("CoinPaprika API error: " + response);
-                    return 0.0;
+                    throw new IOException("Unexpected response " + response);
                 }
                 JSONObject json = new JSONObject(response.body().string());
-                // Extract the USD price from the "quotes" object
-                return json.getJSONObject("quotes").getJSONObject("USD").getDouble("price");
+                return json.getJSONObject("quotes").getJSONObject("USD");
+            }
+        }
+
+        /**
+         * Updates an existing voice channel (matching the prefix) or creates it if it doesn't exist.
+         */
+        private void updateChannel(Guild guild, String prefix, String newName) {
+            for (VoiceChannel channel : guild.getVoiceChannels()) {
+                if (channel.getName().startsWith(prefix)) {
+                    if (!channel.getName().equals(newName)) {
+                        channel.getManager().setName(newName).queue();
+                    }
+                    return;
+                }
+            }
+            guild.createVoiceChannel(newName).queue();
+        }
+
+        /**
+         * Formats a large number with k/M/B suffix, preserving up to three
+         * decimal places. Examples:
+         *   39128   → "39.128k"
+         *   130000  → "130k"
+         *   5700000 → "5.7M"
+         */
+        private String formatWithSuffix(double value) {
+            if (value >= 1_000_000_000) {
+                return SUFFIX_FORMAT.format(value / 1_000_000_000) + "B";
+            } else if (value >= 1_000_000) {
+                return SUFFIX_FORMAT.format(value / 1_000_000) + "M";
+            } else if (value >= 1_000) {
+                return SUFFIX_FORMAT.format(value / 1_000) + "k";
+            } else {
+                return SUFFIX_FORMAT.format(value);
             }
         }
     }

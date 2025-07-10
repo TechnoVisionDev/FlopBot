@@ -51,14 +51,17 @@ public class CommandRegistry extends ListenerAdapter {
                 new GithubCommand(bot),
                 new WhitepaperCommand(bot),
                 //Category: WALLET
+                /**
                 new BalanceCommand(bot),
                 new WithdrawCommand(bot),
                 //Category: FAUCET
                 new FaucetCommand(bot),
                 new DonateCommand(bot),
+                 */
                 //Category: STAKING
                 new StakeCommand(bot),
                 //Category: CASINO
+                /**
                 new BlackjackCommand(bot),
                 new CoinflipCommand(bot),
                 new SlotsCommand(bot),
@@ -66,6 +69,7 @@ public class CommandRegistry extends ListenerAdapter {
                 //Category: UTILITY
                 new CoinStatsCommand(bot),
                 new NetworkCommand(bot),
+                */
                 new RolesCommand(bot),
                 new HelpCommand(bot) // MUST BE LAST COMMAND REGISTERED!
         );
